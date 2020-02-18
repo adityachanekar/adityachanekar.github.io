@@ -1,0 +1,194 @@
+@font-face{
+    font-family: Montserrat;
+    src: url("/fonts/Montserrat/Montserrat-Light.ttf");
+}
+@font-face{
+    font-family: Abril;
+    src: url("/fonts/Abril_Fatface/AbrilFatface-Regular.ttf");
+}
+
+
+body{
+    margin: 0em;
+    background-color: white;
+    scroll-behavior: smooth;
+}
+.nav-bar, .about-us-nav-bar, .contact-nav-bar{
+    padding-top: 15px;
+    padding-left: 15px;
+    box-sizing: border-box;
+    float: left;
+}
+nav {
+    
+    width: 100%;
+   
+    /* background: rgb(244, 66, 83); */
+}
+
+nav ul {
+    
+    display: flex;
+    margin: 0;
+    padding: 0 35px;
+    float: left;
+    top: 0px;
+    height: 45px;
+    position: static;
+
+}
+
+nav ul li {
+    list-style: none;
+}
+
+nav ul li a {
+    display: block;
+    color: white;
+    padding: 10px 20px;
+    text-decoration: none;
+    text-transform: uppercase;
+    font-family: Montserrat;
+    line-height: 24px;
+}
+
+nav ul li:hover {
+    background: rgb(182, 104, 111);
+}
+
+nav ul li.active {
+    background: rgb(225, 219, 220);
+}
+
+.landing-page-background-1{
+    
+    background-image: url('/images/red_banner.png');
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+
+
+}
+.landing-page-image{
+    
+    height: 20px;
+    float: right;
+    margin-right: -20%;
+}
+.heading-landing-page{
+    
+    padding: 10%;
+    padding-bottom: 30%;
+    color: white;
+    
+    
+}
+
+p{
+ 
+    margin: 0em;
+}
+.landing-page-text-container, .about-page-text-container-1,.about-page-text-container-2, .contact-page-Locate-Us{
+    padding-top: 12%;
+    font-family: Abril;
+    font-size: 70px;
+}
+
+
+.about-us-background-1{
+    background-image: url('/images/about-us-top.png');
+    background-repeat: no-repeat;
+    background-attachment: fixed;
+
+    color: white;
+}
+
+.about-us-nav-bar ul li:hover{
+    background-color: rgba(74, 123, 184, 0.899);
+}
+
+.about-page-text-container-1{
+    font-size: 4em;
+    margin-left: 3em;
+    color: rgb(233, 219, 200);
+}
+.about-us-small-text{
+    padding-top: 10em;
+    padding-bottom: 5em;
+    font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+    font-size: 19px;
+    margin-right: 60%;
+    
+    color: rgba(240, 248, 255, 0.44);
+}
+
+.about-us-img-1{
+    height: 20px;
+    float: right;
+    margin-right: 15%;
+}
+
+.about-page-text-container-2{
+    
+    background-image: url('/images/about=us\ bottom.png');
+    background-position: 8px;
+    background-repeat: no-repeat;
+    color: black;
+    padding-top: 5%;
+
+}
+.about-page-text-container-2 .about-us-small-text{
+    color: rgba(69, 70, 70, 0.447);
+    padding-top: 10%;
+}
+
+.about-page-text-container-2-padding{
+    margin-left: 10%;
+}
+
+.about-page-img-2{
+    height: 20px;
+    float: right;
+    margin-right: 15%;
+}
+.contact-nav-bar ul li:hover, .contact-nav-bar ul li a:hover{
+    background-color: rgba(227, 110, 90, 0.858);
+    color: white;
+}
+.contact-nav-bar ul li a{
+    color: rgb(101, 101, 101);
+    font-weight: bolder;
+
+}
+
+.contact-page-Locate-Us{
+    
+    margin-left: 10%;
+
+}
+
+.contact-page-address{
+    padding-bottom: 5%;
+    padding-top: 20px;
+    font-family: Cambria, Cochin, Georgia, Times, 'Times New Roman', serif;
+    font-size: 45px;
+    color: rgba(34, 34, 34, 0.687);
+}
+
+hr{
+    
+    margin-right: 7%;
+}
+
+.contact-us-table{
+    margin-left: 10%;
+    padding-top: 5%;
+}
+
+td {
+    
+    overflow: visible;
+}
+
+.pno{
+    font-size: 30px;
+}
