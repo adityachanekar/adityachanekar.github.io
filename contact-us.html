@@ -4,7 +4,10 @@
     <title>Contact Us | Couch | Goa</title>
     <link rel="stylesheet" href="css/style.css">
 </head>
-
+<script>
+    
+        
+</script>
 <body>
     <nav class="contact-nav-bar">
 
@@ -18,9 +21,9 @@
             <li><a href="/contact-us.html">Contact Us</a></li>
         </ul>
     </nav>
-    <table class="contact-us-table"> 
+    <table class="contact-us-table">
         <tr>
-            <td >
+            <td>
                 <div class="contact-page-Locate-Us">
                     <p>Locate us</p>
                     <hr>
@@ -41,7 +44,7 @@
                     <style>
                         .mapouter {
                             margin: -10% 10%;
-                            position: fixed;
+                            position: absolute;
                             text-align: left;
                             height: 400px;
                             width: 300px;
@@ -58,7 +61,27 @@
                 </div>
             </td>
         </tr>
-    </table>
+    <!-- </table> -->
+    
+    <tr><br><br><td>
+    <div class="feedback-form">
+        <h3 id="form-head">Drop by your thoughts...</h3>
+        <hr>
+        <form method="POST">
+            <label for="full-name">Full Name: </label>
+            <input type="text" id="full-name" name="full-name" size="50" width="100"/><br>
+            <label for="contact">Contact: </label>
+            <input type="tel" id="contact" name="contact" maxlength="10"/><br>
+            <label for="email-id">Email: </label>
+            <input type="email" id="email-id" name="email-id" size="25"/><br>
+            <label for="text-box">Discribe: </label> 
+            <input type="text" id="text-box" name="text-box" /><br><br>
+            <input type="button" name="submit" value="Submit" id="submit"/>
+        </form>
+    </div>
+    </td>
+</tr>
+</table>
 </body>
 
 </html>
