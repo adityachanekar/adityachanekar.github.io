@@ -265,7 +265,7 @@ input[type=range]::-moz-range-thumb{
   <!-- Sticky income bar (mobile only) -->
   <div class="sticky-income">
     <div>
-      <div class="sticky-label">Annual Income</div>
+      <div class="sticky-label">Annual CTC</div>
       <div class="sticky-amount" id="stickyAmt">₹12,00,000</div>
     </div>
     <div style="text-align:right">
@@ -310,18 +310,28 @@ input[type=range]::-moz-range-thumb{
 
   <!-- Income -->
   <div class="card">
-    <div class="card-title">Annual gross income</div>
+
+    <!-- Card title row + capsule toggle -->
+    <div style="display:flex;align-items:center;justify-content:space-between;gap:10px;margin-bottom:0.875rem;padding-bottom:0.625rem;border-bottom:1px solid var(--border);flex-wrap:wrap">
+      <div id="cardTitle" style="font-size:11px;font-weight:600;letter-spacing:0.07em;text-transform:uppercase;color:var(--text3)">Annual CTC (Cost to Company)</div>
+      <!-- Capsule toggle -->
+      <div style="display:flex;background:var(--surface2);border:1px solid var(--border);border-radius:20px;padding:2px;gap:2px;flex-shrink:0">
+        <button id="btnCTC" onclick="setIncomeMode('ctc')" style="border:none;cursor:pointer;border-radius:18px;padding:4px 14px;font-size:12px;font-weight:600;font-family:inherit;transition:all 0.18s;background:var(--accent);color:#fff">CTC</button>
+        <button id="btnGross" onclick="setIncomeMode('gross')" style="border:none;cursor:pointer;border-radius:18px;padding:4px 14px;font-size:12px;font-weight:500;font-family:inherit;transition:all 0.18s;background:transparent;color:var(--text2)">Gross salary</button>
+      </div>
+    </div>
+
     <div class="income-hero">
-      <div class="income-amount" id="incomeDisplay">₹12,00,000</div>
-      <div class="income-hint">Drag slider · edit below</div>
+      <div class="income-amount" id="incomeDisplay">&#x20B9;12,00,000</div>
+      <div class="income-hint" id="incomeHint">Your total CTC &mdash; we'll subtract employer PF &amp; gratuity automatically</div>
     </div>
     <div class="slider-wrap">
       <input type="range" id="incomeSlider" min="0" max="5000000" step="10000" value="1200000">
-      <div class="slider-labels"><span>₹0</span><span>₹25L</span><span>₹50L+</span></div>
+      <div class="slider-labels"><span>&#x20B9;0</span><span>&#x20B9;25L</span><span>&#x20B9;50L+</span></div>
     </div>
     <div class="income-input-row">
       <div class="field">
-        <label>Enter amount (₹)</label>
+        <label id="incomeInputLabel">Annual CTC (&#x20B9;)</label>
         <input type="number" id="incomeInput" value="1200000" min="0" max="100000000" step="10000">
       </div>
       <div class="field">
@@ -332,6 +342,43 @@ input[type=range]::-moz-range-thumb{
         </select>
       </div>
     </div>
+
+    <!-- CTC breakdown — only visible in CTC mode -->
+    <div id="ctcBreakdown" style="margin-top:14px;padding-top:14px;border-top:1px solid var(--border)">
+      <div style="font-size:11px;font-weight:600;letter-spacing:0.07em;text-transform:uppercase;color:var(--text3);margin-bottom:10px">CTC breakdown &mdash; employer contributions, not taxable in your hands</div>
+      <div class="dedn-grid" style="margin-bottom:10px">
+        <div class="field">
+          <label>Basic salary (&#x20B9;) <span style="color:var(--text3);font-weight:400">default: 50% of CTC</span></label>
+          <input type="number" id="basicSalary" value="600000" min="0" step="10000">
+        </div>
+        <div class="field">
+          <label>Employer PF (&#x20B9;) <span style="color:var(--text3);font-weight:400">auto: 12% of basic</span></label>
+          <input type="number" id="empPF" value="72000" min="0" step="1000">
+        </div>
+        <div class="field">
+          <label>Gratuity (&#x20B9;) <span style="color:var(--text3);font-weight:400">auto: 4.81% of basic</span></label>
+          <input type="number" id="gratuity" value="28860" min="0" step="1000">
+        </div>
+        <div class="field">
+          <label>Other CTC perks (&#x20B9;) <span style="color:var(--text3);font-weight:400">insurance, car etc.</span></label>
+          <input type="number" id="otherCTC" value="0" min="0" step="1000">
+        </div>
+      </div>
+      <!-- Gross salary callout -->
+      <div style="background:var(--accent-bg);border:1px solid rgba(0,88,204,0.15);border-radius:var(--radius-sm);padding:10px 14px;display:flex;align-items:center;justify-content:space-between;flex-wrap:wrap;gap:8px">
+        <div>
+          <div style="font-size:11px;color:var(--accent);font-weight:600;letter-spacing:0.05em;text-transform:uppercase;margin-bottom:2px">Gross salary used for tax</div>
+          <div style="font-size:12px;color:var(--text2)">CTC &minus; Employer PF &minus; Gratuity &minus; Other perks</div>
+        </div>
+        <div style="font-size:22px;font-weight:600;font-family:'DM Mono',monospace;color:var(--accent)" id="grossDisplay">&#x20B9;10,99,140</div>
+      </div>
+    </div>
+
+    <!-- Gross mode note — only visible in Gross mode -->
+    <div id="grossNote" style="display:none;margin-top:12px;padding:9px 12px;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);font-size:12px;color:var(--text2);line-height:1.6">
+      Entering gross salary directly — this is your take-home before standard deduction but after employer PF &amp; gratuity are removed. Tax is calculated on this amount.
+    </div>
+
   </div>
 
   <!-- Deductions -->
@@ -476,10 +523,19 @@ input[type=range]::-moz-range-thumb{
       ⚠ Tax rules last updated: 18 March 2026. FY 2026–27 slabs are based on Finance Bill 2026 as presented. Verify with a tax professional before filing.
     </span>
     <br>
-    Built by Aditya Chanekar.&nbsp;  
+    Built by Aditya Chanekar.&nbsp;
     <a href="https://github.com/adityachanekar" target="_blank" rel="noopener">GitHub</a>
     &nbsp;·&nbsp;
     <a href="https://linkedin.com/in/aditya-chanekar" target="_blank" rel="noopener">LinkedIn</a>
+    <br><br>
+    <div style="display:inline-flex;flex-direction:column;align-items:center;gap:4px">
+      <span style="font-size:11px;font-weight:600;letter-spacing:0.08em;color:var(--text3);background:var(--surface2);border:1px solid var(--border);border-radius:20px;padding:3px 12px">v0.2</span>
+      <span style="font-size:11px;color:var(--text3)">Changelog</span>
+      <div style="font-size:11px;color:var(--text3);text-align:left;background:var(--surface2);border:1px solid var(--border);border-radius:var(--radius-sm);padding:8px 12px;margin-top:2px;line-height:2">
+        <strong style="color:var(--text2)">v0.2</strong> — 18 Mar 2026 &nbsp;·&nbsp; FY 2026–27 support, CTC vs Gross toggle, employer PF &amp; gratuity auto-deduction, filing disclaimer, responsive design<br>
+        <strong style="color:var(--text2)">v0.1</strong> — 18 Mar 2026 &nbsp;·&nbsp; Initial release — New &amp; Old regime calculator, slab breakdown, 87A rebate, 234A interest
+      </div>
+    </div>
   </div>
 
 </div>
@@ -487,6 +543,7 @@ input[type=range]::-moz-range-thumb{
 <script>
 var curTab = 'new';
 var lastNew = {}, lastOld = {};
+var incomeMode = 'ctc'; // 'ctc' | 'gross'
 
 function fmt(n) {
   return '₹' + Math.round(n).toLocaleString('en-IN');
@@ -496,6 +553,53 @@ function pct(n) {
 }
 function cap(v, mx) {
   return Math.min(Math.max(v, 0), mx);
+}
+
+function setIncomeMode(mode) {
+  incomeMode = mode;
+  var isCTC = mode === 'ctc';
+
+  // Capsule button styles
+  document.getElementById('btnCTC').style.background   = isCTC  ? 'var(--accent)' : 'transparent';
+  document.getElementById('btnCTC').style.color        = isCTC  ? '#fff'          : 'var(--text2)';
+  document.getElementById('btnCTC').style.fontWeight   = isCTC  ? '600'           : '500';
+  document.getElementById('btnGross').style.background = !isCTC ? 'var(--accent)' : 'transparent';
+  document.getElementById('btnGross').style.color      = !isCTC ? '#fff'          : 'var(--text2)';
+  document.getElementById('btnGross').style.fontWeight = !isCTC ? '600'           : '500';
+
+  // Card title + hint + input label
+  document.getElementById('cardTitle').textContent        = isCTC ? 'Annual CTC (Cost to Company)' : 'Annual gross salary';
+  document.getElementById('incomeHint').textContent       = isCTC ? "Your total CTC \u2014 we'll subtract employer PF & gratuity automatically" : "Salary after employer PF & gratuity are removed \u2014 used directly for tax";
+  document.getElementById('incomeInputLabel').textContent = isCTC ? 'Annual CTC (\u20B9)' : 'Annual gross salary (\u20B9)';
+  document.getElementById('stickyLabel') && (document.getElementById('stickyLabel').textContent = isCTC ? 'Annual CTC' : 'Gross salary');
+
+  // Show/hide sections
+  document.getElementById('ctcBreakdown').style.display = isCTC  ? 'block' : 'none';
+  document.getElementById('grossNote').style.display    = !isCTC ? 'block' : 'none';
+
+  update();
+}
+
+function autoFillCTC() {
+  var ctc   = parseInt(document.getElementById('incomeInput').value) || 0;
+  var basic = Math.round(ctc * 0.5);
+  // EPF: 12% of basic. Statutory ceiling is ₹15,000/mo basic — employer may cap contribution
+  // at ₹1,800/mo (₹21,600/yr) on that ceiling, but many companies pay 12% of full basic.
+  // We use 12% of actual basic — no artificial cap — which is the common real-world case.
+  var pf    = Math.round(basic * 0.12);
+  var grat  = Math.round(basic * 0.0481);
+  document.getElementById('basicSalary').value = basic;
+  document.getElementById('empPF').value        = pf;
+  document.getElementById('gratuity').value     = grat;
+}
+
+function getGrossSalary() {
+  var ctc = parseInt(document.getElementById('incomeInput').value) || 0;
+  if (incomeMode === 'gross') return ctc;
+  var pf   = parseInt(document.getElementById('empPF').value)    || 0;
+  var grat = parseInt(document.getElementById('gratuity').value) || 0;
+  var other= parseInt(document.getElementById('otherCTC').value) || 0;
+  return Math.max(0, ctc - pf - grat - other);
 }
 
 function getSurcharge(tax, income) {
@@ -680,27 +784,38 @@ function switchTab(t) {
 }
 
 function update() {
-  var income = parseInt(document.getElementById('incomeInput').value) || 0;
-  var fy = document.getElementById('fy').value;
+  var ctc = parseInt(document.getElementById('incomeInput').value) || 0;
+  var fy  = document.getElementById('fy').value;
   var age = parseInt(document.getElementById('age').value) || 30;
 
-  // Sync slider
-  document.getElementById('incomeSlider').value = Math.min(income, 5000000);
-  var formatted = fmt(income);
-  document.getElementById('incomeDisplay').textContent = formatted;
-  document.getElementById('stickyAmt').textContent = formatted;
+  // Auto-fill CTC breakdown when in CTC mode
+  if (incomeMode === 'ctc') {
+    var basicEl = document.getElementById('basicSalary');
+    // Only auto-fill if user hasn't manually changed basic
+    if (!basicEl.dataset.manual) autoFillCTC();
+    var gross = getGrossSalary();
+    document.getElementById('grossDisplay').textContent = fmt(gross);
+  }
+
+  var income = getGrossSalary(); // gross is what flows into tax calc
+
+  // Sync slider to CTC value entered
+  document.getElementById('incomeSlider').value = Math.min(ctc, 5000000);
+  document.getElementById('incomeDisplay').textContent = fmt(ctc);
+  var stickyAmt = document.getElementById('stickyAmt');
+  if (stickyAmt) stickyAmt.textContent = fmt(ctc);
 
   // FY badge
-  var fyLabels = { '2627': 'FY 2026–27', '2526': 'FY 2025–26', '2425': 'FY 2024–25', '2324': 'FY 2023–24' };
-  document.getElementById('fyBadge').textContent = fyLabels[fy] || 'FY 2025–26';
+  var fyLabels = { '2627': 'FY 2026\u201327', '2526': 'FY 2025\u201326', '2425': 'FY 2024\u201325', '2324': 'FY 2023\u201324' };
+  document.getElementById('fyBadge').textContent = fyLabels[fy] || 'FY 2025\u201326';
 
   // Age note
   var ageNote = document.getElementById('ageNote');
   if (age >= 80) {
-    ageNote.textContent = 'Super Senior Citizen (80+): Basic exemption ₹5,00,000 under old regime.';
+    ageNote.textContent = 'Super Senior Citizen (80+): Basic exemption \u20B950,000 under old regime.';
     ageNote.classList.remove('hidden');
   } else if (age >= 60) {
-    ageNote.textContent = 'Senior Citizen (60–79): Basic exemption ₹3,00,000 under old regime.';
+    ageNote.textContent = 'Senior Citizen (60\u201379): Basic exemption \u20B930,000 under old regime.';
     ageNote.classList.remove('hidden');
   } else {
     ageNote.classList.add('hidden');
@@ -711,22 +826,22 @@ function update() {
   lastNew = n; lastOld = o;
 
   // New regime
-  document.getElementById('nTaxable').textContent = fmt(n.taxable);
-  document.getElementById('nTaxPre').textContent = fmt(n.taxAfter);
-  document.getElementById('nSurcharge').textContent = fmt(n.surcharge);
-  document.getElementById('nCess').textContent = fmt(n.cess);
-  document.getElementById('nTotal').textContent = fmt(n.total);
+  document.getElementById('nTaxable').textContent  = fmt(n.taxable);
+  document.getElementById('nTaxPre').textContent   = fmt(n.taxAfter);
+  document.getElementById('nSurcharge').textContent= fmt(n.surcharge);
+  document.getElementById('nCess').textContent     = fmt(n.cess);
+  document.getElementById('nTotal').textContent    = fmt(n.total);
   var nEff = income > 0 ? (n.total / income * 100) : 0;
   document.getElementById('nEff').textContent = pct(nEff);
   document.getElementById('nMar').textContent = getMarginalRate(n.taxable, n.slabs);
   document.getElementById('nProg').style.width = Math.min(nEff * 2.5, 100) + '%';
 
   // Old regime
-  document.getElementById('oTaxable').textContent = fmt(o.taxable);
-  document.getElementById('oTaxPre').textContent = fmt(o.taxAfter);
-  document.getElementById('oSurcharge').textContent = fmt(o.surcharge);
-  document.getElementById('oCess').textContent = fmt(o.cess);
-  document.getElementById('oTotal').textContent = fmt(o.total);
+  document.getElementById('oTaxable').textContent  = fmt(o.taxable);
+  document.getElementById('oTaxPre').textContent   = fmt(o.taxAfter);
+  document.getElementById('oSurcharge').textContent= fmt(o.surcharge);
+  document.getElementById('oCess').textContent     = fmt(o.cess);
+  document.getElementById('oTotal').textContent    = fmt(o.total);
   var oEff = income > 0 ? (o.total / income * 100) : 0;
   document.getElementById('oEff').textContent = pct(oEff);
   document.getElementById('oMar').textContent = getMarginalRate(o.taxable, o.slabs);
@@ -736,27 +851,27 @@ function update() {
   var banner = document.getElementById('recBanner');
   var saving = Math.abs(n.total - o.total);
   if (n.total <= o.total) {
-    banner.style.background = 'var(--green-bg)';
-    banner.style.borderColor = 'rgba(10,102,64,0.2)';
+    banner.style.background   = 'var(--green-bg)';
+    banner.style.borderColor  = 'rgba(10,102,64,0.2)';
     document.getElementById('recIcon').style.background = 'var(--green)';
-    document.getElementById('recIcon').style.color = '#fff';
-    document.getElementById('recTitle').textContent = 'New Regime is better for you';
-    document.getElementById('recDesc').textContent = 'You save more under the new regime. This is the default from FY 2023-24 — no action needed.';
-    document.getElementById('recSaving').style.color = 'var(--green)';
-    document.getElementById('recSaving').textContent = n.total < o.total ? 'Save ' + fmt(saving) + ' vs old regime' : 'Both regimes are equal';
-    document.getElementById('stickyRec').textContent = 'New regime';
-    document.getElementById('stickyRec').style.color = 'var(--green)';
+    document.getElementById('recIcon').style.color      = '#fff';
+    document.getElementById('recTitle').textContent     = 'New Regime is better for you';
+    document.getElementById('recDesc').textContent      = 'You save more under the new regime. This is the default from FY 2023-24 \u2014 no action needed.';
+    document.getElementById('recSaving').style.color    = 'var(--green)';
+    document.getElementById('recSaving').textContent    = n.total < o.total ? 'Save ' + fmt(saving) + ' vs old regime' : 'Both regimes are equal';
+    document.getElementById('stickyRec').textContent    = 'New regime';
+    document.getElementById('stickyRec').style.color    = 'var(--green)';
   } else {
-    banner.style.background = 'var(--orange-bg)';
-    banner.style.borderColor = 'rgba(143,58,16,0.2)';
+    banner.style.background   = 'var(--orange-bg)';
+    banner.style.borderColor  = 'rgba(143,58,16,0.2)';
     document.getElementById('recIcon').style.background = 'var(--orange)';
-    document.getElementById('recIcon').style.color = '#fff';
-    document.getElementById('recTitle').textContent = 'Old Regime is better for you';
-    document.getElementById('recDesc').textContent = 'Your deductions bring down taxable income significantly. Opt out of new regime when filing.';
-    document.getElementById('recSaving').style.color = 'var(--orange)';
-    document.getElementById('recSaving').textContent = 'Save ' + fmt(saving) + ' vs new regime';
-    document.getElementById('stickyRec').textContent = 'Old regime';
-    document.getElementById('stickyRec').style.color = 'var(--orange)';
+    document.getElementById('recIcon').style.color      = '#fff';
+    document.getElementById('recTitle').textContent     = 'Old Regime is better for you';
+    document.getElementById('recDesc').textContent      = 'Your deductions bring down taxable income significantly. Opt out of new regime when filing.';
+    document.getElementById('recSaving').style.color    = 'var(--orange)';
+    document.getElementById('recSaving').textContent    = 'Save ' + fmt(saving) + ' vs new regime';
+    document.getElementById('stickyRec').textContent    = 'Old regime';
+    document.getElementById('stickyRec').style.color    = 'var(--orange)';
   }
 
   renderSlabs();
@@ -766,18 +881,33 @@ function update() {
 // Event listeners
 document.getElementById('incomeSlider').addEventListener('input', function () {
   document.getElementById('incomeInput').value = this.value;
+  // Reset manual flag when CTC changes so auto-fill kicks in again
+  document.getElementById('basicSalary').dataset.manual = '';
   update();
 });
 document.getElementById('incomeInput').addEventListener('input', function () {
   document.getElementById('incomeSlider').value = Math.min(parseInt(this.value) || 0, 5000000);
+  document.getElementById('basicSalary').dataset.manual = '';
   update();
 });
-['age','fy','dof','empType','d80c','d80d','d80dp','dHRA','dNPS','dHomeLoan','d80E','d80G','d80TTA'].forEach(function (id) {
+// Mark basic as manually edited if user touches it
+document.getElementById('basicSalary').addEventListener('input', function () {
+  this.dataset.manual = '1';
+  // Recalc PF and gratuity from new basic
+  var basic = parseInt(this.value) || 0;
+  document.getElementById('empPF').value    = Math.round(basic * 0.12);
+  document.getElementById('gratuity').value = Math.round(basic * 0.0481);
+  update();
+});
+['age','fy','dof','empType','d80c','d80d','d80dp','dHRA','dNPS','dHomeLoan','d80E','d80G','d80TTA',
+ 'empPF','gratuity','otherCTC'].forEach(function (id) {
   var el = document.getElementById(id);
   if (el) { el.addEventListener('input', update); el.addEventListener('change', update); }
 });
 
+// Also bump version in changelog when CTC mode added — handled in HTML
 update();
+setIncomeMode('ctc');
 </script>
 </body>
 </html>
