@@ -1,0 +1,783 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0">
+<title>India Income Tax Calculator — FY 2025-26</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:wght@400;500;600&family=DM+Mono:wght@400;500&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #f5f4f0;
+  --surface: #ffffff;
+  --surface2: #f0efe9;
+  --border: rgba(0,0,0,0.10);
+  --border-strong: rgba(0,0,0,0.18);
+  --text: #1a1a18;
+  --text2: #6b6b63;
+  --text3: #9a9a90;
+  --accent: #0058cc;
+  --accent-bg: #e8f0fc;
+  --green: #0a6640;
+  --green-bg: #e0f3ea;
+  --orange: #8f3a10;
+  --orange-bg: #fceee7;
+  --radius: 12px;
+  --radius-sm: 8px;
+  --shadow: 0 1px 3px rgba(0,0,0,0.08);
+}
+@media(prefers-color-scheme:dark){
+  :root{
+    --bg:#18180f;--surface:#222219;--surface2:#2c2c22;
+    --border:rgba(255,255,255,0.09);--border-strong:rgba(255,255,255,0.16);
+    --text:#eeeee4;--text2:#a0a094;--text3:#6a6a60;
+    --accent:#5b9eff;--accent-bg:#1a2840;
+    --green:#34c97a;--green-bg:#0a2a1a;
+    --orange:#f7935c;--orange-bg:#2a1508;
+    --shadow:0 1px 3px rgba(0,0,0,0.4);
+  }
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+html{font-size:16px}
+body{
+  font-family:'DM Sans',system-ui,sans-serif;
+  background:var(--bg);color:var(--text);
+  min-height:100vh;line-height:1.5;
+}
+/* Layout */
+.app-shell{max-width:760px;margin:0 auto;padding:1rem}
+@media(min-width:600px){.app-shell{padding:1.5rem}}
+@media(min-width:768px){.app-shell{padding:2rem}}
+
+/* Header */
+.app-header{
+  display:flex;align-items:flex-start;justify-content:space-between;
+  margin-bottom:1.25rem;gap:12px;flex-wrap:wrap;
+}
+.app-title{font-size:clamp(18px,5vw,24px);font-weight:600;letter-spacing:-0.02em;color:var(--text)}
+.app-sub{font-size:13px;color:var(--text2);margin-top:2px}
+.fy-badge{
+  font-size:11px;font-weight:500;padding:4px 12px;
+  border-radius:20px;border:1px solid var(--border);
+  background:var(--surface);color:var(--text2);white-space:nowrap;
+  align-self:flex-start;margin-top:4px;
+}
+
+/* Cards */
+.card{
+  background:var(--surface);border:1px solid var(--border);
+  border-radius:var(--radius);padding:1rem;margin-bottom:0.875rem;
+  box-shadow:var(--shadow);
+}
+.card-title{
+  font-size:11px;font-weight:600;letter-spacing:0.07em;text-transform:uppercase;
+  color:var(--text3);margin-bottom:0.875rem;padding-bottom:0.625rem;
+  border-bottom:1px solid var(--border);
+}
+
+/* Grid helpers */
+.grid-3{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+.grid-2{display:grid;grid-template-columns:1fr 1fr;gap:10px}
+.grid-1{display:grid;grid-template-columns:1fr;gap:10px}
+@media(max-width:480px){
+  .grid-3{grid-template-columns:1fr 1fr}
+  .grid-3 .span-full{grid-column:1/-1}
+}
+
+/* Form elements */
+.field{display:flex;flex-direction:column;gap:5px}
+.field label{font-size:12px;color:var(--text2);font-weight:500}
+input[type=number],input[type=date],select{
+  width:100%;padding:9px 11px;
+  border:1px solid var(--border-strong);border-radius:var(--radius-sm);
+  font-size:14px;font-family:inherit;
+  background:var(--surface);color:var(--text);
+  outline:none;transition:border-color 0.15s,box-shadow 0.15s;
+  appearance:none;-webkit-appearance:none;
+}
+input[type=number]:focus,input[type=date]:focus,select:focus{
+  border-color:var(--accent);
+  box-shadow:0 0 0 3px rgba(0,88,204,0.12);
+}
+select{background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='12' height='8' viewBox='0 0 12 8'%3E%3Cpath d='M1 1l5 5 5-5' stroke='%23888' stroke-width='1.5' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 10px center;padding-right:30px}
+
+/* Income block */
+.income-hero{text-align:center;padding:0.5rem 0 1rem}
+.income-amount{
+  font-size:clamp(32px,8vw,48px);font-weight:600;
+  letter-spacing:-0.03em;color:var(--text);
+  font-family:'DM Mono',monospace;line-height:1.1;
+}
+.income-hint{font-size:12px;color:var(--text3);margin-top:4px;margin-bottom:16px}
+.slider-wrap{position:relative;padding:8px 0}
+input[type=range]{
+  -webkit-appearance:none;appearance:none;
+  width:100%;height:4px;
+  border-radius:2px;background:var(--surface2);
+  border:1px solid var(--border);outline:none;cursor:pointer;
+}
+input[type=range]::-webkit-slider-thumb{
+  -webkit-appearance:none;appearance:none;
+  width:22px;height:22px;border-radius:50%;
+  background:var(--accent);border:2px solid var(--surface);
+  box-shadow:0 1px 4px rgba(0,0,0,0.2);cursor:pointer;
+}
+input[type=range]::-moz-range-thumb{
+  width:22px;height:22px;border-radius:50%;
+  background:var(--accent);border:2px solid var(--surface);
+  box-shadow:0 1px 4px rgba(0,0,0,0.2);cursor:pointer;border:none;
+}
+.slider-labels{display:flex;justify-content:space-between;font-size:11px;color:var(--text3);margin-top:4px}
+.income-input-row{display:grid;grid-template-columns:1fr auto;gap:10px;margin-top:12px;align-items:end}
+@media(max-width:360px){.income-input-row{grid-template-columns:1fr}}
+
+/* Metric cards */
+.metrics{display:grid;grid-template-columns:repeat(2,1fr);gap:8px;margin-bottom:12px}
+.metric{
+  background:var(--surface2);border-radius:var(--radius-sm);
+  padding:10px 12px;border:1px solid var(--border);
+}
+.metric-label{font-size:11px;color:var(--text3);margin-bottom:4px}
+.metric-value{font-size:clamp(14px,3.5vw,17px);font-weight:600;color:var(--text);font-family:'DM Mono',monospace}
+
+/* Regime columns */
+.regime-grid{display:grid;grid-template-columns:1fr 1fr;gap:10px;margin-bottom:0.875rem}
+@media(max-width:500px){.regime-grid{grid-template-columns:1fr}}
+.regime-col{
+  border:1px solid var(--border);border-radius:var(--radius);
+  padding:1rem;
+}
+.regime-header{display:flex;align-items:center;gap:8px;margin-bottom:12px;flex-wrap:wrap}
+.badge{
+  display:inline-flex;align-items:center;font-size:11px;font-weight:600;
+  padding:3px 10px;border-radius:20px;letter-spacing:0.02em;
+}
+.badge-new{background:var(--green-bg);color:var(--green)}
+.badge-old{background:var(--orange-bg);color:var(--orange)}
+.regime-hint{font-size:11px;color:var(--text3)}
+.total-label{font-size:11px;color:var(--text3);margin-bottom:2px}
+.total-value{font-size:clamp(20px,5vw,26px);font-weight:600;letter-spacing:-0.02em;font-family:'DM Mono',monospace}
+.rates-row{display:flex;gap:16px;margin-top:8px}
+.rate-item{}
+.rate-name{font-size:11px;color:var(--text3)}
+.rate-val{font-size:13px;font-weight:600;color:var(--text)}
+.prog{height:5px;border-radius:3px;background:var(--surface2);overflow:hidden;margin-top:8px;border:1px solid var(--border)}
+.prog-fill{height:100%;border-radius:3px;transition:width 0.4s cubic-bezier(.4,0,.2,1)}
+
+/* Recommendation banner */
+.rec-banner{
+  border-radius:var(--radius);padding:1rem 1.125rem;
+  margin-bottom:0.875rem;display:flex;gap:12px;align-items:flex-start;
+  border:1px solid transparent;
+}
+.rec-icon{
+  width:36px;height:36px;border-radius:50%;
+  display:flex;align-items:center;justify-content:center;
+  font-size:18px;flex-shrink:0;font-weight:700;
+}
+.rec-body{flex:1}
+.rec-title{font-size:14px;font-weight:600;margin-bottom:3px}
+.rec-desc{font-size:13px;color:var(--text2);line-height:1.5}
+.rec-saving{font-size:18px;font-weight:600;margin-top:6px;font-family:'DM Mono',monospace}
+
+/* Tab bar */
+.tab-bar{
+  display:flex;gap:3px;background:var(--surface2);
+  border-radius:var(--radius-sm);padding:3px;margin-bottom:12px;
+  border:1px solid var(--border);
+}
+.tab-btn{
+  flex:1;padding:8px 6px;border:none;border-radius:6px;
+  font-size:13px;font-family:inherit;cursor:pointer;
+  background:transparent;color:var(--text2);font-weight:500;
+  transition:all 0.15s;
+}
+.tab-btn.active{
+  background:var(--surface);color:var(--text);
+  box-shadow:0 1px 2px rgba(0,0,0,0.1);
+  border:1px solid var(--border);
+}
+
+/* Slab table */
+.slab-table{width:100%;border-collapse:collapse;font-size:13px}
+.slab-table th{
+  text-align:left;font-size:11px;font-weight:600;color:var(--text3);
+  padding:6px 8px;border-bottom:1px solid var(--border);letter-spacing:0.05em;
+  text-transform:uppercase;
+}
+.slab-table td{
+  padding:8px 8px;border-bottom:1px solid var(--border);
+  color:var(--text);vertical-align:middle;
+}
+.slab-table tr:last-child td{border-bottom:none}
+.slab-active td{color:var(--accent);font-weight:600}
+@media(max-width:400px){
+  .slab-table th:nth-child(3),.slab-table td:nth-child(3){display:none}
+}
+
+/* Filing table */
+.info-table{width:100%;border-collapse:collapse;font-size:13px}
+.info-table td{padding:8px 0;border-bottom:1px solid var(--border)}
+.info-table tr:last-child td{border-bottom:none}
+.info-table td:first-child{color:var(--text2);width:55%}
+.info-table td:last-child{font-weight:500;text-align:right}
+
+/* Note */
+.note{
+  font-size:12px;color:var(--text2);margin-top:10px;padding:9px 11px;
+  background:var(--surface2);border-radius:var(--radius-sm);
+  border:1px solid var(--border);line-height:1.6;
+}
+.note.hidden{display:none}
+
+/* Deduction grid — 3 col → 2 col on mobile */
+.dedn-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:10px}
+@media(max-width:540px){.dedn-grid{grid-template-columns:1fr 1fr}}
+@media(max-width:340px){.dedn-grid{grid-template-columns:1fr}}
+
+/* Section divider */
+.divider{border:none;border-top:1px solid var(--border);margin:0.5rem 0 0.875rem}
+
+/* Sticky income bar on mobile */
+.sticky-income{
+  position:sticky;top:0;z-index:10;
+  background:var(--surface);border-bottom:1px solid var(--border);
+  padding:10px 1rem;margin:-1rem -1rem 1rem;
+  display:none;align-items:center;justify-content:space-between;
+}
+@media(max-width:600px){.sticky-income{display:flex}}
+.sticky-amount{font-size:18px;font-weight:600;font-family:'DM Mono',monospace}
+.sticky-label{font-size:11px;color:var(--text3)}
+
+/* Footer */
+.footer{text-align:center;font-size:12px;color:var(--text3);margin-top:1.5rem;padding-bottom:2rem;line-height:1.8}
+.footer a{color:var(--text2);text-decoration:underline}
+
+/* Animations */
+@keyframes fadeUp{from{opacity:0;transform:translateY(8px)}to{opacity:1;transform:translateY(0)}}
+.card,.rec-banner,.regime-col{animation:fadeUp 0.3s ease both}
+</style>
+</head>
+<body>
+
+<div class="app-shell">
+
+  <!-- Sticky income bar (mobile only) -->
+  <div class="sticky-income">
+    <div>
+      <div class="sticky-label">Annual Income</div>
+      <div class="sticky-amount" id="stickyAmt">₹12,00,000</div>
+    </div>
+    <div style="text-align:right">
+      <div class="sticky-label">Recommended</div>
+      <div id="stickyRec" style="font-size:13px;font-weight:600"></div>
+    </div>
+  </div>
+
+  <!-- Header -->
+  <div class="app-header">
+    <div>
+      <div class="app-title">Income Tax Calculator</div>
+      <div class="app-sub">India · Salaried Professionals · New &amp; Old Regime</div>
+    </div>
+    <span class="fy-badge" id="fyBadge">FY 2025–26</span>
+  </div>
+
+  <!-- Taxpayer Profile -->
+  <div class="card">
+    <div class="card-title">Taxpayer profile</div>
+    <div class="grid-3">
+      <div class="field">
+        <label>Age (years)</label>
+        <input type="number" id="age" value="30" min="18" max="100">
+      </div>
+      <div class="field">
+        <label>Financial year</label>
+        <select id="fy">
+          <option value="2627">FY 2026–27</option>
+          <option value="2526">FY 2025–26</option>
+          <option value="2425">FY 2024–25</option>
+          <option value="2324">FY 2023–24</option>
+        </select>
+      </div>
+      <div class="field span-full">
+        <label>Date of filing</label>
+        <input type="date" id="dof" value="2025-07-31">
+      </div>
+    </div>
+    <div class="note hidden" id="ageNote"></div>
+  </div>
+
+  <!-- Income -->
+  <div class="card">
+    <div class="card-title">Annual gross income</div>
+    <div class="income-hero">
+      <div class="income-amount" id="incomeDisplay">₹12,00,000</div>
+      <div class="income-hint">Drag slider · edit below</div>
+    </div>
+    <div class="slider-wrap">
+      <input type="range" id="incomeSlider" min="0" max="5000000" step="10000" value="1200000">
+      <div class="slider-labels"><span>₹0</span><span>₹25L</span><span>₹50L+</span></div>
+    </div>
+    <div class="income-input-row">
+      <div class="field">
+        <label>Enter amount (₹)</label>
+        <input type="number" id="incomeInput" value="1200000" min="0" max="100000000" step="10000">
+      </div>
+      <div class="field">
+        <label>Employment</label>
+        <select id="empType">
+          <option value="salaried">Salaried</option>
+          <option value="pensioner">Pensioner</option>
+        </select>
+      </div>
+    </div>
+  </div>
+
+  <!-- Deductions -->
+  <div class="card">
+    <div class="card-title">Deductions &amp; exemptions — old regime only</div>
+    <div class="dedn-grid">
+      <div class="field">
+        <label>80C — LIC / PF / ELSS (₹)</label>
+        <input type="number" id="d80c" value="150000" min="0" max="150000" step="5000">
+      </div>
+      <div class="field">
+        <label>80D — Health ins. self (₹)</label>
+        <input type="number" id="d80d" value="25000" min="0" max="100000" step="1000">
+      </div>
+      <div class="field">
+        <label>80D — Health ins. parents (₹)</label>
+        <input type="number" id="d80dp" value="0" min="0" max="100000" step="1000">
+      </div>
+      <div class="field">
+        <label>HRA exemption (₹)</label>
+        <input type="number" id="dHRA" value="0" min="0" step="5000">
+      </div>
+      <div class="field">
+        <label>80CCD(1B) — NPS (₹)</label>
+        <input type="number" id="dNPS" value="0" min="0" max="50000" step="5000">
+      </div>
+      <div class="field">
+        <label>Home loan interest (₹)</label>
+        <input type="number" id="dHomeLoan" value="0" min="0" max="200000" step="5000">
+      </div>
+      <div class="field">
+        <label>80E — Education loan (₹)</label>
+        <input type="number" id="d80E" value="0" min="0" step="5000">
+      </div>
+      <div class="field">
+        <label>80G — Donations (₹)</label>
+        <input type="number" id="d80G" value="0" min="0" step="5000">
+      </div>
+      <div class="field">
+        <label>80TTA — Savings int. (₹)</label>
+        <input type="number" id="d80TTA" value="0" min="0" max="10000" step="500">
+      </div>
+    </div>
+    <div class="note">Standard deduction of ₹50,000 (old) / ₹75,000 (new) included automatically. 80C capped ₹1.5L · 80CCD(1B) capped ₹50K · Home loan interest capped ₹2L.</div>
+  </div>
+
+  <!-- Recommendation -->
+  <div class="rec-banner" id="recBanner">
+    <div class="rec-icon" id="recIcon">★</div>
+    <div class="rec-body">
+      <div class="rec-title" id="recTitle"></div>
+      <div class="rec-desc" id="recDesc"></div>
+      <div class="rec-saving" id="recSaving"></div>
+    </div>
+  </div>
+
+  <!-- Regime comparison -->
+  <div class="regime-grid">
+    <!-- New -->
+    <div class="regime-col">
+      <div class="regime-header">
+        <span class="badge badge-new">New regime</span>
+        <span class="regime-hint">Default FY24-25+</span>
+      </div>
+      <div class="metrics">
+        <div class="metric"><div class="metric-label">Taxable income</div><div class="metric-value" id="nTaxable">—</div></div>
+        <div class="metric"><div class="metric-label">Tax (pre-cess)</div><div class="metric-value" id="nTaxPre">—</div></div>
+        <div class="metric"><div class="metric-label">Surcharge</div><div class="metric-value" id="nSurcharge">—</div></div>
+        <div class="metric"><div class="metric-label">Cess (4%)</div><div class="metric-value" id="nCess">—</div></div>
+      </div>
+      <hr class="divider">
+      <div class="total-label">Total liability</div>
+      <div class="total-value" id="nTotal">—</div>
+      <div class="rates-row">
+        <div class="rate-item"><div class="rate-name">Effective</div><div class="rate-val" id="nEff">—</div></div>
+        <div class="rate-item"><div class="rate-name">Marginal</div><div class="rate-val" id="nMar">—</div></div>
+      </div>
+      <div class="prog"><div class="prog-fill" id="nProg" style="background:var(--green);width:0%"></div></div>
+    </div>
+    <!-- Old -->
+    <div class="regime-col">
+      <div class="regime-header">
+        <span class="badge badge-old">Old regime</span>
+        <span class="regime-hint">With deductions</span>
+      </div>
+      <div class="metrics">
+        <div class="metric"><div class="metric-label">Taxable income</div><div class="metric-value" id="oTaxable">—</div></div>
+        <div class="metric"><div class="metric-label">Tax (pre-cess)</div><div class="metric-value" id="oTaxPre">—</div></div>
+        <div class="metric"><div class="metric-label">Surcharge</div><div class="metric-value" id="oSurcharge">—</div></div>
+        <div class="metric"><div class="metric-label">Cess (4%)</div><div class="metric-value" id="oCess">—</div></div>
+      </div>
+      <hr class="divider">
+      <div class="total-label">Total liability</div>
+      <div class="total-value" id="oTotal">—</div>
+      <div class="rates-row">
+        <div class="rate-item"><div class="rate-name">Effective</div><div class="rate-val" id="oEff">—</div></div>
+        <div class="rate-item"><div class="rate-name">Marginal</div><div class="rate-val" id="oMar">—</div></div>
+      </div>
+      <div class="prog"><div class="prog-fill" id="oProg" style="background:var(--orange);width:0%"></div></div>
+    </div>
+  </div>
+
+  <!-- Slab breakdown -->
+  <div class="card">
+    <div class="card-title">Slab-wise breakdown</div>
+    <div class="tab-bar">
+      <button class="tab-btn active" id="tabNew" onclick="switchTab('new')">New regime</button>
+      <button class="tab-btn" id="tabOld" onclick="switchTab('old')">Old regime</button>
+    </div>
+    <div style="overflow-x:auto">
+      <table class="slab-table">
+        <thead>
+          <tr>
+            <th>Income slab</th>
+            <th>Rate</th>
+            <th>Amount in slab</th>
+            <th>Tax</th>
+          </tr>
+        </thead>
+        <tbody id="slabBody"></tbody>
+      </table>
+    </div>
+    <div class="note hidden" id="rebateNote"></div>
+  </div>
+
+  <!-- Filing status -->
+  <div class="card">
+    <div class="card-title">Filing status</div>
+    <table class="info-table">
+      <tr><td>Due date</td><td id="dueDate" style="color:var(--accent)">—</td></tr>
+      <tr><td>Days to due date</td><td id="daysLeft">—</td></tr>
+      <tr><td>Filing status</td><td id="filingStatus">—</td></tr>
+      <tr><td>Interest u/s 234A (late)</td><td id="int234A">—</td></tr>
+    </table>
+  </div>
+
+  <div class="footer">
+    Calculated as per Income Tax Act, India. For reference only — consult a CA for tax planning.<br>
+    <a href="https://incometax.gov.in" target="_blank" rel="noopener">incometax.gov.in</a> · New regime default from FY 2023-24 · Cess 4% · 87A rebate applicable
+    <br><br>
+    <span style="background:var(--surface2);border:1px solid var(--border);border-radius:6px;padding:4px 10px;font-size:11px;display:inline-block;margin-bottom:8px">
+      ⚠ Tax rules last updated: 18 March 2026. FY 2026–27 slabs are based on Finance Bill 2026 as presented. Verify with a tax professional before filing.
+    </span>
+    <br>
+    Built by Aditya Chanekar.&nbsp;  
+    <a href="https://github.com/adityachanekar" target="_blank" rel="noopener">GitHub</a>
+    &nbsp;·&nbsp;
+    <a href="https://linkedin.com/in/aditya-chanekar" target="_blank" rel="noopener">LinkedIn</a>
+  </div>
+
+</div>
+
+<script>
+var curTab = 'new';
+var lastNew = {}, lastOld = {};
+
+function fmt(n) {
+  return '₹' + Math.round(n).toLocaleString('en-IN');
+}
+function pct(n) {
+  return n.toFixed(2) + '%';
+}
+function cap(v, mx) {
+  return Math.min(Math.max(v, 0), mx);
+}
+
+function getSurcharge(tax, income) {
+  if (income <= 5000000) return 0;
+  if (income <= 10000000) return tax * 0.10;
+  if (income <= 20000000) return tax * 0.15;
+  if (income <= 50000000) return tax * 0.25;
+  return tax * 0.37;
+}
+
+function getSlabs(regime, fy) {
+  if (regime === 'new') {
+    if (fy === '2627') {
+      return [
+        { from: 0, to: 400000, rate: 0 },
+        { from: 400000, to: 800000, rate: 5 },
+        { from: 800000, to: 1200000, rate: 10 },
+        { from: 1200000, to: 1600000, rate: 15 },
+        { from: 1600000, to: 2000000, rate: 20 },
+        { from: 2000000, to: 2400000, rate: 25 },
+        { from: 2400000, to: Infinity, rate: 30 }
+      ];
+    }
+    if (fy === '2526') {
+      return [
+        { from: 0, to: 400000, rate: 0 },
+        { from: 400000, to: 800000, rate: 5 },
+        { from: 800000, to: 1200000, rate: 10 },
+        { from: 1200000, to: 1600000, rate: 15 },
+        { from: 1600000, to: 2000000, rate: 20 },
+        { from: 2000000, to: 2400000, rate: 25 },
+        { from: 2400000, to: Infinity, rate: 30 }
+      ];
+    }
+    return [
+      { from: 0, to: 300000, rate: 0 },
+      { from: 300000, to: 600000, rate: 5 },
+      { from: 600000, to: 900000, rate: 10 },
+      { from: 900000, to: 1200000, rate: 15 },
+      { from: 1200000, to: 1500000, rate: 20 },
+      { from: 1500000, to: Infinity, rate: 30 }
+    ];
+  } else {
+    var age = parseInt(document.getElementById('age').value) || 30;
+    if (age >= 80) {
+      return [
+        { from: 0, to: 500000, rate: 0 },
+        { from: 500000, to: 1000000, rate: 20 },
+        { from: 1000000, to: Infinity, rate: 30 }
+      ];
+    } else if (age >= 60) {
+      return [
+        { from: 0, to: 300000, rate: 0 },
+        { from: 300000, to: 500000, rate: 5 },
+        { from: 500000, to: 1000000, rate: 20 },
+        { from: 1000000, to: Infinity, rate: 30 }
+      ];
+    }
+    return [
+      { from: 0, to: 250000, rate: 0 },
+      { from: 250000, to: 500000, rate: 5 },
+      { from: 500000, to: 1000000, rate: 20 },
+      { from: 1000000, to: Infinity, rate: 30 }
+    ];
+  }
+}
+
+function calcSlab(taxableIncome, slabs) {
+  var tax = 0;
+  for (var i = 0; i < slabs.length; i++) {
+    var s = slabs[i];
+    if (taxableIncome <= s.from) break;
+    var chunk = Math.min(taxableIncome, s.to === Infinity ? taxableIncome : s.to) - s.from;
+    tax += chunk * (s.rate / 100);
+  }
+  return tax;
+}
+
+function getMarginalRate(taxable, slabs) {
+  for (var i = slabs.length - 1; i >= 0; i--) {
+    if (taxable > slabs[i].from) return slabs[i].rate + '%';
+  }
+  return '0%';
+}
+
+function calcNew(income, fy) {
+  var stdDedn = 75000;
+  var taxable = Math.max(0, income - stdDedn);
+  var slabs = getSlabs('new', fy);
+  var baseTax = calcSlab(taxable, slabs);
+  var rebate = 0;
+  if ((fy === '2627' || fy === '2526') && taxable <= 1200000) rebate = Math.min(baseTax, 60000);
+  else if (fy !== '2526' && fy !== '2627' && taxable <= 700000) rebate = Math.min(baseTax, 25000);
+  var taxAfter = Math.max(0, baseTax - rebate);
+  var surcharge = getSurcharge(taxAfter, taxable);
+  var cess = (taxAfter + surcharge) * 0.04;
+  return { taxable, baseTax, rebate, taxAfter, surcharge, cess, total: taxAfter + surcharge + cess, slabs };
+}
+
+function calcOld(income, fy) {
+  var age = parseInt(document.getElementById('age').value) || 30;
+  var stdDedn = 50000;
+  var c80c = cap(parseInt(document.getElementById('d80c').value) || 0, 150000);
+  var c80d = cap(parseInt(document.getElementById('d80d').value) || 0, age >= 60 ? 50000 : 25000);
+  var c80dp = cap(parseInt(document.getElementById('d80dp').value) || 0, age >= 60 ? 50000 : 25000);
+  var hra = parseInt(document.getElementById('dHRA').value) || 0;
+  var nps = cap(parseInt(document.getElementById('dNPS').value) || 0, 50000);
+  var homeLoan = cap(parseInt(document.getElementById('dHomeLoan').value) || 0, 200000);
+  var e80E = parseInt(document.getElementById('d80E').value) || 0;
+  var g80G = parseInt(document.getElementById('d80G').value) || 0;
+  var tta = cap(parseInt(document.getElementById('d80TTA').value) || 0, 10000);
+  var totalDedn = stdDedn + c80c + c80d + c80dp + hra + nps + homeLoan + e80E + g80G + tta;
+  var taxable = Math.max(0, income - totalDedn);
+  var slabs = getSlabs('old', fy);
+  var baseTax = calcSlab(taxable, slabs);
+  var rebate = taxable <= 500000 ? Math.min(baseTax, 12500) : 0;
+  var taxAfter = Math.max(0, baseTax - rebate);
+  var surcharge = getSurcharge(taxAfter, taxable);
+  var cess = (taxAfter + surcharge) * 0.04;
+  return { taxable, baseTax, rebate, taxAfter, surcharge, cess, total: taxAfter + surcharge + cess, slabs, totalDedn };
+}
+
+function renderSlabs() {
+  var res = curTab === 'new' ? lastNew : lastOld;
+  if (!res || !res.slabs) return;
+  var html = '';
+  for (var i = 0; i < res.slabs.length; i++) {
+    var s = res.slabs[i];
+    if (res.taxable <= s.from) break;
+    var chunk = Math.min(res.taxable, s.to === Infinity ? res.taxable : s.to) - s.from;
+    var slabTax = chunk * (s.rate / 100);
+    var label = s.to === Infinity ? 'Above ' + fmt(s.from) : fmt(s.from) + ' – ' + fmt(s.to);
+    var active = res.taxable > s.from && s.rate > 0;
+    html += '<tr' + (active ? ' class="slab-active"' : '') + '>';
+    html += '<td>' + label + '</td><td>' + s.rate + '%</td><td>' + fmt(chunk) + '</td><td>' + fmt(slabTax) + '</td></tr>';
+  }
+  document.getElementById('slabBody').innerHTML = html;
+  var rn = document.getElementById('rebateNote');
+  if (res.rebate > 0) {
+    rn.textContent = 'Rebate u/s 87A of ' + fmt(res.rebate) + ' applied — tax reduced to zero.';
+    rn.classList.remove('hidden');
+  } else {
+    rn.classList.add('hidden');
+  }
+}
+
+function calcFiling() {
+  var fy = document.getElementById('fy').value;
+  var dof = document.getElementById('dof').value;
+  var fyYear = parseInt('20' + fy.substring(2, 4));
+  var due = new Date(fyYear + '-07-31');
+  var today = new Date();
+  var daysLeft = Math.ceil((due - today) / 86400000);
+  var dueStr = due.toLocaleDateString('en-IN', { day: 'numeric', month: 'short', year: 'numeric' });
+  document.getElementById('dueDate').textContent = dueStr;
+  if (daysLeft > 0) {
+    document.getElementById('daysLeft').textContent = daysLeft + ' days remaining';
+    document.getElementById('daysLeft').style.color = 'var(--green)';
+  } else {
+    document.getElementById('daysLeft').textContent = Math.abs(daysLeft) + ' days overdue';
+    document.getElementById('daysLeft').style.color = 'var(--orange)';
+  }
+  var filed = dof ? new Date(dof) : today;
+  if (!dof || filed <= due) {
+    document.getElementById('filingStatus').textContent = 'On time';
+    document.getElementById('filingStatus').style.color = 'var(--green)';
+    document.getElementById('int234A').textContent = 'Not applicable';
+  } else {
+    var months = Math.ceil((filed - due) / 86400000 / 30);
+    document.getElementById('filingStatus').textContent = 'Late by ~' + months + ' month(s)';
+    document.getElementById('filingStatus').style.color = 'var(--orange)';
+    var int = lastNew.total * 0.01 * months;
+    document.getElementById('int234A').textContent = fmt(int) + ' approx';
+  }
+}
+
+function switchTab(t) {
+  curTab = t;
+  document.getElementById('tabNew').className = 'tab-btn' + (t === 'new' ? ' active' : '');
+  document.getElementById('tabOld').className = 'tab-btn' + (t === 'old' ? ' active' : '');
+  renderSlabs();
+}
+
+function update() {
+  var income = parseInt(document.getElementById('incomeInput').value) || 0;
+  var fy = document.getElementById('fy').value;
+  var age = parseInt(document.getElementById('age').value) || 30;
+
+  // Sync slider
+  document.getElementById('incomeSlider').value = Math.min(income, 5000000);
+  var formatted = fmt(income);
+  document.getElementById('incomeDisplay').textContent = formatted;
+  document.getElementById('stickyAmt').textContent = formatted;
+
+  // FY badge
+  var fyLabels = { '2627': 'FY 2026–27', '2526': 'FY 2025–26', '2425': 'FY 2024–25', '2324': 'FY 2023–24' };
+  document.getElementById('fyBadge').textContent = fyLabels[fy] || 'FY 2025–26';
+
+  // Age note
+  var ageNote = document.getElementById('ageNote');
+  if (age >= 80) {
+    ageNote.textContent = 'Super Senior Citizen (80+): Basic exemption ₹5,00,000 under old regime.';
+    ageNote.classList.remove('hidden');
+  } else if (age >= 60) {
+    ageNote.textContent = 'Senior Citizen (60–79): Basic exemption ₹3,00,000 under old regime.';
+    ageNote.classList.remove('hidden');
+  } else {
+    ageNote.classList.add('hidden');
+  }
+
+  var n = calcNew(income, fy);
+  var o = calcOld(income, fy);
+  lastNew = n; lastOld = o;
+
+  // New regime
+  document.getElementById('nTaxable').textContent = fmt(n.taxable);
+  document.getElementById('nTaxPre').textContent = fmt(n.taxAfter);
+  document.getElementById('nSurcharge').textContent = fmt(n.surcharge);
+  document.getElementById('nCess').textContent = fmt(n.cess);
+  document.getElementById('nTotal').textContent = fmt(n.total);
+  var nEff = income > 0 ? (n.total / income * 100) : 0;
+  document.getElementById('nEff').textContent = pct(nEff);
+  document.getElementById('nMar').textContent = getMarginalRate(n.taxable, n.slabs);
+  document.getElementById('nProg').style.width = Math.min(nEff * 2.5, 100) + '%';
+
+  // Old regime
+  document.getElementById('oTaxable').textContent = fmt(o.taxable);
+  document.getElementById('oTaxPre').textContent = fmt(o.taxAfter);
+  document.getElementById('oSurcharge').textContent = fmt(o.surcharge);
+  document.getElementById('oCess').textContent = fmt(o.cess);
+  document.getElementById('oTotal').textContent = fmt(o.total);
+  var oEff = income > 0 ? (o.total / income * 100) : 0;
+  document.getElementById('oEff').textContent = pct(oEff);
+  document.getElementById('oMar').textContent = getMarginalRate(o.taxable, o.slabs);
+  document.getElementById('oProg').style.width = Math.min(oEff * 2.5, 100) + '%';
+
+  // Recommendation
+  var banner = document.getElementById('recBanner');
+  var saving = Math.abs(n.total - o.total);
+  if (n.total <= o.total) {
+    banner.style.background = 'var(--green-bg)';
+    banner.style.borderColor = 'rgba(10,102,64,0.2)';
+    document.getElementById('recIcon').style.background = 'var(--green)';
+    document.getElementById('recIcon').style.color = '#fff';
+    document.getElementById('recTitle').textContent = 'New Regime is better for you';
+    document.getElementById('recDesc').textContent = 'You save more under the new regime. This is the default from FY 2023-24 — no action needed.';
+    document.getElementById('recSaving').style.color = 'var(--green)';
+    document.getElementById('recSaving').textContent = n.total < o.total ? 'Save ' + fmt(saving) + ' vs old regime' : 'Both regimes are equal';
+    document.getElementById('stickyRec').textContent = 'New regime';
+    document.getElementById('stickyRec').style.color = 'var(--green)';
+  } else {
+    banner.style.background = 'var(--orange-bg)';
+    banner.style.borderColor = 'rgba(143,58,16,0.2)';
+    document.getElementById('recIcon').style.background = 'var(--orange)';
+    document.getElementById('recIcon').style.color = '#fff';
+    document.getElementById('recTitle').textContent = 'Old Regime is better for you';
+    document.getElementById('recDesc').textContent = 'Your deductions bring down taxable income significantly. Opt out of new regime when filing.';
+    document.getElementById('recSaving').style.color = 'var(--orange)';
+    document.getElementById('recSaving').textContent = 'Save ' + fmt(saving) + ' vs new regime';
+    document.getElementById('stickyRec').textContent = 'Old regime';
+    document.getElementById('stickyRec').style.color = 'var(--orange)';
+  }
+
+  renderSlabs();
+  calcFiling();
+}
+
+// Event listeners
+document.getElementById('incomeSlider').addEventListener('input', function () {
+  document.getElementById('incomeInput').value = this.value;
+  update();
+});
+document.getElementById('incomeInput').addEventListener('input', function () {
+  document.getElementById('incomeSlider').value = Math.min(parseInt(this.value) || 0, 5000000);
+  update();
+});
+['age','fy','dof','empType','d80c','d80d','d80dp','dHRA','dNPS','dHomeLoan','d80E','d80G','d80TTA'].forEach(function (id) {
+  var el = document.getElementById(id);
+  if (el) { el.addEventListener('input', update); el.addEventListener('change', update); }
+});
+
+update();
+</script>
+</body>
+</html>
